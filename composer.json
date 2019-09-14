@@ -17,11 +17,25 @@
             "KentarouTakeda\\SafeRouting\\": "src/"
         }
     },
+    "autoload-dev": {
+        "psr-4": {
+            "KentarouTakeda\\SafeRouting\\Tests\\": "tests/"
+        }
+    },
     "extra": {
         "laravel": {
             "providers": [
                 "KentarouTakeda\\SafeRouting\\SafeRoutingServiceProvider"
             ]
         }
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^8.3",
+        "orchestra/testbench": "^4.0",
+        "spatie/phpunit-watcher": "^1.12"
+    },
+    "scripts": {
+        "test": "phpunit",
+        "watch": "phpunit-watcher watch"
     }
 }
