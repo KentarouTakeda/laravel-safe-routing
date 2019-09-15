@@ -5,13 +5,12 @@ namespace KentarouTakeda\SafeRouting\Tests;
 use Illuminate\Support\Facades\Route;
 use KentarouTakeda\SafeRouting\SafeRouting;
 
-class BasicTest extends TestCase
+class ViewRouteTest extends TestCase
 {
     const ARRAY = [
         'routes' => [
-            'top' => [
-                'uri' => '/',
-                'controller' => 'SomeController@top'
+            'view' => [
+                'uri' => '/view',
             ],
         ],
     ];
@@ -27,21 +26,18 @@ class BasicTest extends TestCase
 
     /** @test */
     public function testRoutingName() {
-        $this->assertSame($this->route->getName(), 'top');
+        $this->assertSame('view', $this->route->getName());
+    }
+
+    /** @test */
+    public function testControllerShuoldBeViewController() {
+        $this->assertNull($this->route->controller);
+        $this->assertSame(\Illuminate\Routing\ViewController::class, get_class($this->route->getController()));
     }
 
     /** @test */
     public function testUri() {
-        $this->assertSame($this->route->uri(), '/');
-    }
-
-    /** @test */
-    public function testMethods() {
-        $this->assertSame($this->route->methods(), ['GET', 'HEAD']);
-    }
-
-    /** @test */
-    public function testController() {
-        $this->assertSame($this->route->action['controller'], '\App\Http\Controllers\SomeController@top');
+        $this->assertSame('view', $this->route->uri());
     }
 }
+
