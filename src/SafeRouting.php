@@ -1,4 +1,5 @@
 <?php
+declare(strict_types=1);
 
 namespace KentarouTakeda\SafeRouting;
 
@@ -13,6 +14,7 @@ class SafeRouting
         $namespace = $array['namespace'] ?? '\App\Http\Controllers';
         Route::namespace($namespace)->group(function() use($array) {
             foreach($array['routes'] as $name => $data) {
+                $this->applyDefaultData($name, $data);
                 if(isset($data['controller'])) {
                     $route = Route::name($name);
                     $route->get($data['uri'], $data['controller']);
@@ -21,5 +23,12 @@ class SafeRouting
                 }
             }
         });
+    }
+
+    protected function applyDefaultData(string $name, ?array &$data): void {
+        if(true !== isset($data['uri'])) {
+            $tmp = str_replace('.', '/', $name);
+            $data['uri'] = $tmp;
+        }
     }
 }
