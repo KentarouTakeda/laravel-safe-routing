@@ -20,4 +20,10 @@ class SafeRoutingServiceProvider extends ServiceProvider
             $safeRouting->makeRoute($array);
         }
     }
+
+    public function register()
+    {
+        parent::register();
+        $this->app->singleton(SafeRouting::class);
+    }
 }
