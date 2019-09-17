@@ -28,6 +28,8 @@ class SafeRouting
     protected function applyDefaultData(string $name, ?array &$data): void {
         if(true !== isset($data['uri'])) {
             $tmp = str_replace('.', '/', $name);
+            $tmp = preg_replace('/(^|\/)index$/', '', $tmp, -1, $count);
+
             $data['uri'] = $tmp;
         }
     }

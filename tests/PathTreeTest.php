@@ -33,4 +33,40 @@ class PathTreeTest extends TestCase
 
         $this->assertSame('foo/bar', $this->route->uri());
     }
+
+    /** @test */
+    public function testSecondLevelIndex() {
+        resolve(SafeRouting::class)->makeRoute([
+            'routes' => [
+                'dir.index' => null
+            ]
+        ]);
+        $this->route = Route::getRoutes()->get()[0];
+
+        $this->assertSame('dir', $this->route->uri());
+    }
+
+    /** @test */
+    public function testTopLevelIndex() {
+        resolve(SafeRouting::class)->makeRoute([
+            'routes' => [
+                'index' => null
+            ]
+        ]);
+        $this->route = Route::getRoutes()->get()[0];
+
+        $this->assertSame('/', $this->route->uri());
+    }
+
+    /** @test */
+    public function testDirectoryNameIsIndex() {
+        resolve(SafeRouting::class)->makeRoute([
+            'routes' => [
+                'index.index' => null
+            ]
+        ]);
+        $this->route = Route::getRoutes()->get()[0];
+
+        $this->assertSame('index', $this->route->uri());
+    }
 }
