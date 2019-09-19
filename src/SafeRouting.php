@@ -7,12 +7,26 @@ use Illuminate\Support\Facades\Route;
 
 class SafeRouting
 {
+
+    /** @var Validation */
+    protected $validation;
+
+    public function __construct(Validation $validation) {
+        $this->validation = $validation;
+    }
+
     public function makeRoute(array $array): void {
         if(true !== isset($array['routes'])) {
             return;
         }
         $namespace = $array['namespace'] ?? '\App\Http\Controllers';
-        Route::namespace($namespace)->middleware(ApplyView::class)->group(function() use($array) {
+
+        $middlewares = [
+            Validation::class,
+            ApplyView::class,
+        ];
+
+        Route::namespace($namespace)->middleware($middlewares)->group(function() use($array) {
             foreach($array['routes'] as $name => $data) {
                 $this->applyDefaultData($name, $data);
                 if(isset($data['controller'])) {
@@ -20,6 +34,10 @@ class SafeRouting
                     $route->get($data['uri'], $data['controller']);
                 } else {
                     Route::view($data['uri'], $name)->name($name);
+                }
+
+                foreach($data['validation']??[] as $method => $schema) {
+                    $this->validation->setSchema($name, $method, $schema);
                 }
             }
         });

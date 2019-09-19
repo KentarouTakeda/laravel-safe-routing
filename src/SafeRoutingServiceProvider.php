@@ -25,5 +25,6 @@ class SafeRoutingServiceProvider extends ServiceProvider
     {
         parent::register();
         $this->app->singleton(SafeRouting::class);
+        $this->app->singleton(Validation::class);
     }
 }
