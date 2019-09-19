@@ -11,7 +11,7 @@ class ValidationTest extends TestCase
         resolve(SafeRouting::class)->makeRoute([
             'routes' => [
                 'viewname' => [
-                    'validation' => [
+                    'methods' => [
                         'GET' => [
                             'type' => 'object',
                             'properties' => [
@@ -34,7 +34,7 @@ class ValidationTest extends TestCase
             'routes' => [
                 'viewname' => [
                     'controller' => 'SomeController@get',
-                    'validation' => [
+                    'methods' => [
                         'GET' => [
                             'type' => 'object',
                             'properties' => [
@@ -47,6 +47,53 @@ class ValidationTest extends TestCase
         ]);
 
         $response = $this->get('/viewname?i=1');
+        $data = $response->baseResponse->getOriginalContent()->getData();
+        $this->assertSame(['i'=>1], $data);
+    }
+
+    /** @test */
+    public function testPostValidationFailure() {
+        resolve(SafeRouting::class)->makeRoute([
+            'namespace' => __NAMESPACE__ . '\Controllers',
+            'routes' => [
+                'viewname' => [
+                    'controller' => 'SomeController@get',
+                    'methods' => [
+                        'POST' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'i' => ['type' => 'integer']
+                            ]
+                        ]
+                    ],
+                ],
+            ],
+        ]);
+
+        $response = $this->post('/viewname', ['i'=>'x']);
+        $response->assertStatus(400);
+    }
+
+    /** @test */
+    public function testPostTypeCast() {
+        resolve(SafeRouting::class)->makeRoute([
+            'namespace' => __NAMESPACE__ . '\Controllers',
+            'routes' => [
+                'viewname' => [
+                    'controller' => 'SomeController@post',
+                    'methods' => [
+                        'POST' => [
+                            'type' => 'object',
+                            'properties' => [
+                                'i' => ['type' => 'integer']
+                            ]
+                        ]
+                    ],
+                ],
+            ],
+        ]);
+
+        $response = $this->post('/viewname', ['i'=>'1']);
         $data = $response->baseResponse->getOriginalContent()->getData();
         $this->assertSame(['i'=>1], $data);
     }

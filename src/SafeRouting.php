@@ -31,12 +31,16 @@ class SafeRouting
                 $this->applyDefaultData($name, $data);
                 if(isset($data['controller'])) {
                     $route = Route::name($name);
-                    $route->get($data['uri'], $data['controller']);
+                    $methods = array_keys($data['methods']??[]) ?: ['GET'];
+                    $route->match($methods, $data['uri'], $data['controller']);
                 } else {
                     Route::view($data['uri'], $name)->name($name);
                 }
 
-                foreach($data['validation']??[] as $method => $schema) {
+                foreach($data['methods']??[] as $method => $schema) {
+                    if(is_null($schema)) {
+                        continue;
+                    }
                     $this->validation->setSchema($name, $method, $schema);
                 }
             }

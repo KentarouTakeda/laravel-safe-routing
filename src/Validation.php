@@ -16,9 +16,19 @@ use Closure;
 
 class Validation
 {
-    private const OPT_GET = C::CHECK_MODE_TYPE_CAST | C::CHECK_MODE_EXCEPTIONS | C::CHECK_MODE_COERCE_TYPES | C::CHECK_MODE_APPLY_DEFAULTS;
-    private const OPT_POST = C::CHECK_MODE_TYPE_CAST | C::CHECK_MODE_EXCEPTIONS | C::CHECK_MODE_COERCE_TYPES | C::CHECK_MODE_APPLY_DEFAULTS;
+    private const OPT_REQUEST = C::CHECK_MODE_TYPE_CAST | C::CHECK_MODE_EXCEPTIONS | C::CHECK_MODE_COERCE_TYPES | C::CHECK_MODE_APPLY_DEFAULTS;
     private const OPT_RESPONSE = C::CHECK_MODE_TYPE_CAST | C::CHECK_MODE_EXCEPTIONS;
+
+    const METHOD_OTHER = [
+        Request::METHOD_POST,
+        Request::METHOD_PUT,
+        Request::METHOD_PATCH,
+        Request::METHOD_DELETE,
+        Request::METHOD_PURGE,
+        Request::METHOD_OPTIONS,
+        Request::METHOD_TRACE,
+        Request::METHOD_CONNECT,
+    ];
 
     /** @var Validator */
     protected $validator;
@@ -38,11 +48,25 @@ class Validation
 
         if($schema) {
             try {
-                $query = $this->validate($request->query(), $schema, self::OPT_GET);
+                $query = $this->validate($request->query(), $schema, self::OPT_REQUEST);
             } catch(ValidationException $e) {
                 abort(400, $e->getMessage());
             }
             $request->query->replace($query);
+        }
+
+        foreach(self::METHOD_OTHER as $method) {
+            $schema = $this->getSchema($routename, $method);
+            dump($routename, $method, $schema);
+            if(is_null($schema)) {
+                continue;
+            }
+            try {
+                $post = $this->validate($request->post(), $schema, self::OPT_REQUEST);
+            } catch(ValidationException $e) {
+                abort(400, $e->getMessage());
+            }
+            $request->request->replace($post);
         }
 
         $response = $next($request);

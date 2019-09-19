@@ -14,4 +14,7 @@ class SomeController {
     public function get(Request $request) {
         return $request->query();
     }
+    public function post(Request $request) {
+        return $request->post();
+    }
 }
