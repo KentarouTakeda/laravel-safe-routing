@@ -12,4 +12,9 @@ abstract class TestCase extends OrchestraTestCase
             SafeRoutingServiceProvider::class,
         ];
     }
+
+    protected function setUp(): void {
+        parent::setUp();
+        app('view')->getFinder()->setPaths([__DIR__ . '/views/']);
+    }
 }
