@@ -1,6 +1,7 @@
 <?php
 
 namespace KentarouTakeda\SafeRouting\Tests\Controllers;
+use Illuminate\Http\Request;
 
 class SomeController {
     public function method() {
@@ -9,5 +10,8 @@ class SomeController {
         return [
             'foo' => 'var',
         ];
+    }
+    public function get(Request $request) {
+        return $request->query();
     }
 }
