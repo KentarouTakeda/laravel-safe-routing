@@ -10,7 +10,8 @@
     "require": {
         "php": "^7.3",
         "symfony/yaml": "^3.0|^4.0",
-        "laravel/framework": "6.0.*"
+        "laravel/framework": "6.0.*",
+        "justinrainbow/json-schema": "^5.2"
     },
     "autoload": {
         "psr-4": {
