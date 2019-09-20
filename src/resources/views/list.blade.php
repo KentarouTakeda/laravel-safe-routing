@@ -30,7 +30,13 @@ ul {
   <tbody>
       @foreach($routes as $route)
         <tr>
-          <td>{{ $route['name'] }}</td>
+          <td>
+            @if(in_array('GET', $route['methods']) && empty($route['parameters']))
+              <a href="{{ route($route['name']) }}">{{ $route['name'] }}</a>
+            @else
+              {{ $route['name'] }}
+            @endif
+          </td>
           <td><ul>
             @foreach($route['methods'] as $method)
               <li>{{ $method }}</li>
