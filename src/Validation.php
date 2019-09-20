@@ -4,7 +4,7 @@ declare(strict_types=1);
 namespace KentarouTakeda\SafeRouting;
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\RedirectResponse;
@@ -37,8 +37,13 @@ class Validation
     /** @var array */
     protected $schemas = [];
 
+    /** @var string */
+    protected $cachePath;
+
     public function __construct(Validator $validator) {
         $this->validator = $validator;
+        $this->cachePath = storage_path('framework/saferouting/');
+        File::makeDirectory($this->cachePath, 0775, true, true);
     }
 
     public function handle(Request $request, Closure $next)
@@ -96,11 +101,34 @@ class Validation
         return $response;
     }
 
-    public function setSchema(string $name, string $method, array $schema): void {
+    public function setSchema(string $name, string $method, array $schema, ?int $mtime): void {
         $this->schemas[$name][$method] = $schema;
+        if(is_null($mtime)) {
+            return;
+        }
+
+        $file = $this->getSchemaCacheName($name, $method);
+        if(File::exists($file) && File::lastModified($file) >= $mtime) {
+            return;
+        }
+
+        File::put($file, "<?php return " . var_export($schema, true) . ";");
     }
     public function getSchema(string $name, string $method):? array {
-        return $this->schemas[$name][$method] ?? null;
+        $schema = $this->schemas[$name][$method] ?? null;
+        if(isset($schema)) {
+            return $schema;
+        }
+        $file = $this->getSchemaCacheName($name, $method);
+        if(true !== File::exists($file)) {
+            return null;
+        }
+        $schema = include_once($file);
+        return $schema;
+    }
+
+    protected function getSchemaCacheName(string $name, string $method): string {
+        return $this->cachePath . "{$name}.{$method}.schema.php";
     }
 
     private function validate($data, array $schema, int $options) {

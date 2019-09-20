@@ -18,7 +18,8 @@ class SafeRoutingServiceProvider extends ServiceProvider
         }
         foreach($files as $file) {
             $array = Yaml::parseFile($file);
-            $safeRouting->makeRoute($array);
+            $mtime = File::lastModified($file);
+            $safeRouting->makeRoute($array, $mtime);
         }
     }
 

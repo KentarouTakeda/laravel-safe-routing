@@ -15,13 +15,13 @@ class SafeRouting
         $this->validation = $validation;
     }
 
-    public function makeRoute(array $array): void {
+    public function makeRoute(array $array, int $mtime=null): void {
         if(true !== isset($array['routes'])) {
             return;
         }
         $namespace = $array['namespace'] ?? '\App\Http\Controllers';
 
-        Route::namespace($namespace)->middleware('safe.routing')->group(function() use($array) {
+        Route::namespace($namespace)->middleware('safe.routing')->group(function() use($array, $mtime) {
             foreach($array['routes'] as $name => $data) {
                 $this->applyDefaultData($name, $data);
                 if(isset($data['controller'])) {
@@ -36,10 +36,10 @@ class SafeRouting
                     if(is_null($schema)) {
                         continue;
                     }
-                    $this->validation->setSchema($name, $method, $schema);
+                    $this->validation->setSchema($name, $method, $schema, $mtime);
                 }
                 if(isset($data['RET'])) {
-                    $this->validation->setSchema($name, 'RET', $data['RET']);
+                    $this->validation->setSchema($name, 'RET', $data['RET'], $mtime);
                 }
             }
         });
