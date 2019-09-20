@@ -27,6 +27,7 @@ class SafeRouting
                 if(isset($data['controller'])) {
                     $route = Route::name($name);
                     $methods = array_keys($data['methods']??[]) ?: ['GET'];
+                    $methods = array_diff($methods, ['RET']);
                     $route->match($methods, $data['uri'], $data['controller']);
                 } else {
                     Route::view($data['uri'], $name)->name($name);

@@ -4,6 +4,7 @@ namespace KentarouTakeda\SafeRouting;
 
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\File;
+use Illuminate\Support\Facades\Route;
 use Symfony\Component\Yaml\Yaml;
 use Illuminate\Routing\Router;
 
@@ -20,6 +21,13 @@ class SafeRoutingServiceProvider extends ServiceProvider
             $array = Yaml::parseFile($file);
             $mtime = File::lastModified($file);
             $safeRouting->makeRoute($array, $mtime);
+        }
+
+        if(config('app.debug')) {
+                $this->loadViewsFrom(__DIR__.'/resources/views', 'saferouting');
+            Route::prefix('_saferouting')
+                ->namespace(__NAMESPACE__ . '\Http\Controllers')
+                ->group(__DIR__ . '/routes/web.php');
         }
     }
 
