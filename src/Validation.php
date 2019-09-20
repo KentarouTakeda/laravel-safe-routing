@@ -57,7 +57,6 @@ class Validation
 
         foreach(self::METHOD_OTHER as $method) {
             $schema = $this->getSchema($routename, $method);
-            dump($routename, $method, $schema);
             if(is_null($schema)) {
                 continue;
             }
