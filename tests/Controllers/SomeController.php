@@ -8,7 +8,7 @@ class SomeController {
     }
     public function withReturn() {
         return [
-            'foo' => 'var',
+            'foo' => 'bar',
         ];
     }
     public function get(Request $request) {

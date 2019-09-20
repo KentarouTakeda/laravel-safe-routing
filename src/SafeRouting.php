@@ -22,8 +22,8 @@ class SafeRouting
         $namespace = $array['namespace'] ?? '\App\Http\Controllers';
 
         $middlewares = [
-            Validation::class,
             ApplyView::class,
+            Validation::class,
         ];
 
         Route::namespace($namespace)->middleware($middlewares)->group(function() use($array) {
@@ -42,6 +42,9 @@ class SafeRouting
                         continue;
                     }
                     $this->validation->setSchema($name, $method, $schema);
+                }
+                if(isset($data['RET'])) {
+                    $this->validation->setSchema($name, 'RET', $data['RET']);
                 }
             }
         });

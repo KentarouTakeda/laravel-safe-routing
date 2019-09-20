@@ -50,6 +50,6 @@ class ApplyViewTest extends TestCase
         ]);
 
         $response = $this->get('/view');
-        $this->assertSame(['foo' => 'var'], $response->baseResponse->getOriginalContent()->getData());
+        $this->assertSame(['foo' => 'bar'], $response->baseResponse->getOriginalContent()->getData());
     }
 }

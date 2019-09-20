@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
+use Illuminate\Http\RedirectResponse;
 
 use JsonSchema\Validator;
 use JsonSchema\Constraints\Constraint as C;
@@ -69,6 +70,29 @@ class Validation
         }
 
         $response = $next($request);
+
+        if(is_a($response, RedirectResponse::class)) {
+            return $response;
+        }
+
+        if($response->exception) {
+            return $response;
+        }
+
+        $content = $response->getOriginalContent();
+        if(is_a($content, 'Illuminate\View\View')) {
+            return $response;
+        }
+
+        $schema = $this->getSchema($routename, 'RET');
+        if(isset($schema)) {
+            try {
+                $this->validate($content, $schema, self::OPT_RESPONSE);
+            } catch(ValidationException $e) {
+                abort(500, $e->getMessage());
+            }
+        }
+
         return $response;
     }
 

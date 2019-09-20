@@ -97,4 +97,46 @@ class ValidationTest extends TestCase
         $data = $response->baseResponse->getOriginalContent()->getData();
         $this->assertSame(['i'=>1], $data);
     }
+
+    /** @test */
+    public function testResponseValidationFailure() {
+        resolve(SafeRouting::class)->makeRoute([
+            'namespace' => __NAMESPACE__ . '\Controllers',
+            'routes' => [
+                'viewname' => [
+                    'controller' => 'SomeController@get',
+                    'RET' => [
+                        'type' => 'null',
+                    ]
+                ],
+            ],
+        ]);
+
+        $response = $this->get('/viewname');
+        $response->assertStatus(500);
+    }
+
+    /** @test */
+    public function testResponseValidationOk() {
+        resolve(SafeRouting::class)->makeRoute([
+            'namespace' => __NAMESPACE__ . '\Controllers',
+            'routes' => [
+                'viewname' => [
+                    'controller' => 'SomeController@withReturn',
+                    'RET' => [
+                        'type' => 'object',
+                        'properties' => [
+                            'foo' => [
+                                'type' => "string",
+                                "enum" => ['bar'],
+                            ]
+                        ]
+                    ]
+                ],
+            ],
+        ]);
+
+        $response = $this->get('/viewname');
+        $response->assertStatus(200);
+    }
 }
