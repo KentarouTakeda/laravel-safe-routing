@@ -21,12 +21,7 @@ class SafeRouting
         }
         $namespace = $array['namespace'] ?? '\App\Http\Controllers';
 
-        $middlewares = [
-            ApplyView::class,
-            Validation::class,
-        ];
-
-        Route::namespace($namespace)->middleware($middlewares)->group(function() use($array) {
+        Route::namespace($namespace)->middleware('safe.routing')->group(function() use($array) {
             foreach($array['routes'] as $name => $data) {
                 $this->applyDefaultData($name, $data);
                 if(isset($data['controller'])) {

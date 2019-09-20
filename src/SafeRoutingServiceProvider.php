@@ -5,6 +5,7 @@ namespace KentarouTakeda\SafeRouting;
 use Illuminate\Foundation\Support\Providers\RouteServiceProvider as ServiceProvider;
 use Illuminate\Support\Facades\File;
 use Symfony\Component\Yaml\Yaml;
+use Illuminate\Routing\Router;
 
 class SafeRoutingServiceProvider extends ServiceProvider
 {
@@ -26,5 +27,16 @@ class SafeRoutingServiceProvider extends ServiceProvider
         parent::register();
         $this->app->singleton(SafeRouting::class);
         $this->app->singleton(Validation::class);
+    }
+
+    public function boot()
+    {
+        parent::boot();
+
+        $router = resolve(Router::class);
+        $router->middlewareGroup('safe.routing', [
+            ApplyView::class,
+            Validation::class,
+        ]);
     }
 }
