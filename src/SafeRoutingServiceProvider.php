@@ -23,9 +23,12 @@ class SafeRoutingServiceProvider extends ServiceProvider
             $safeRouting->makeRoute($array, $mtime);
         }
 
-        Route::prefix('_saferouting')
-            ->namespace(__NAMESPACE__ . '\Http\Controllers')
-            ->group(__DIR__ . '/routes/web.php');
+        if(config('app.debug')) {
+                $this->loadViewsFrom(__DIR__.'/resources/views', 'saferouting');
+            Route::prefix('_saferouting')
+                ->namespace(__NAMESPACE__ . '\Http\Controllers')
+                ->group(__DIR__ . '/routes/web.php');
+        }
     }
 
     public function register()
@@ -44,7 +47,5 @@ class SafeRoutingServiceProvider extends ServiceProvider
             ApplyView::class,
             Validation::class,
         ]);
-
-        $this->loadViewsFrom(__DIR__.'/resources/views', 'saferouting');
     }
 }
