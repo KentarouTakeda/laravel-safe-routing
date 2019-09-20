@@ -16,9 +16,12 @@ class InfoController {
             $middleware = array_filter($middleware, function($in) { return $in !== 'safe.routing'; } );
             $middleware = array_values($middleware);
 
+            $methods = array_diff($route->methods, ['HEAD']);
+            $methods = array_values($methods);
+
             $routes[] = [
                 'name' => $route->getName(),
-                'methods' => $route->methods,
+                'methods' => $methods,
                 'uri' => $route->uri(),
                 'parameters' => $route->parameterNames(),
                 'middleware' => $middleware,
