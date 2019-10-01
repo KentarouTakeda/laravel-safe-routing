@@ -10,14 +10,11 @@ use Illuminate\Routing\Router;
 
 class SafeRoutingServiceProvider extends ServiceProvider
 {
+    private $files = null;
+
     public function map(SafeRouting $safeRouting)
     {
-        $glob = base_path('routes/*.yml');
-        $files = File::glob($glob);
-        if($files === false) {
-            abort(500);
-        }
-        foreach($files as $file) {
+        foreach($this->getFiles() as $file) {
             $array = Yaml::parseFile($file);
             $mtime = File::lastModified($file);
             $safeRouting->makeRoute($array, $mtime);
@@ -47,5 +44,28 @@ class SafeRoutingServiceProvider extends ServiceProvider
             ApplyView::class,
             Validation::class,
         ]);
+
+        if(config('app.debug')) {
+            $router = resolve(SafeRouting::class);
+            foreach($this->getFiles() as $file) {
+                foreach(Yaml::parseFile($file)['routes'] ?? [] as $name => $route) {
+                    if(isset($route['description'])) {
+                        $router->setDescription($name, $route['description']);
+                    }
+                }
+            }
+        }
+
+    }
+
+    protected function getFiles(): array {
+        if(is_null($this->files)) {
+            $glob = base_path('routes/*.yml');
+            $this->files = File::glob($glob);
+            if($this->files === false) {
+                abort(500);
+            }
+        }
+        return $this->files;
     }
 }

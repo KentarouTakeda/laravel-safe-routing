@@ -11,6 +11,9 @@ class SafeRouting
     /** @var Validation */
     protected $validation;
 
+    /** @var array */
+    protected $descriptions = [];
+
     public function __construct(Validation $validation) {
         $this->validation = $validation;
     }
@@ -53,5 +56,12 @@ class SafeRouting
 
             $data['uri'] = $tmp;
         }
+    }
+
+    public function setDescription(string $name, string $description): void {
+        $this->descriptions[$name] = $description;
+    }
+    public function getDescription(string $name):? string {
+        return $this->descriptions[$name] ?? null;
     }
 }

@@ -3,9 +3,10 @@
 namespace KentarouTakeda\SafeRouting\Http\Controllers;
 
 use Illuminate\Support\Facades\Route;
+use KentarouTakeda\SafeRouting\SafeRouting;
 
 class InfoController {
-    public function list() {
+    public function list(SafeRouting $routing) {
         $routes = [];
 
         foreach(Route::getRoutes() as $route) {
@@ -19,12 +20,14 @@ class InfoController {
             $methods = array_diff($route->methods, ['HEAD']);
             $methods = array_values($methods);
 
+            $name = $route->getName();
             $routes[] = [
-                'name' => $route->getName(),
+                'name' => $name,
                 'methods' => $methods,
                 'uri' => $route->uri(),
                 'parameters' => $route->parameterNames(),
                 'middleware' => $middleware,
+                'description' => $routing->getDescription($name),
             ];
         }
 

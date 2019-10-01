@@ -25,6 +25,7 @@ ul {
       <th>Method</th>
       <th>URI</th>
       <th>Middleware</th>
+      <th>Description</th>
     </tr>
   </thead>
   <tbody>
@@ -48,6 +49,7 @@ ul {
               <li>{{ $middleware }}</li>
             @endforeach
           </ul> </td>
+          <td>{{ $route['description'] ?? '-' }}</td>
         </tr>
       @endforeach
   </tbody>
