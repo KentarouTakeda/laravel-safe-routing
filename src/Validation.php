@@ -112,8 +112,10 @@ class Validation
             return;
         }
 
-        File::put($file, "<?php return " . var_export($schema, true) . ";");
-        File::chmod($file, 0664);
+        try {
+            File::put($file, "<?php return " . var_export($schema, true) . ";");
+            File::chmod($file, 0664);
+        } catch(\Exception $e) {}
     }
     public function getSchema(string $name, string $method):? array {
         $schema = $this->schemas[$name][$method] ?? null;
