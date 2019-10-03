@@ -33,7 +33,10 @@ class SafeRouting
                     $methods = array_diff($methods, ['RET']);
                     $route->match($methods, $data['uri'], $data['controller']);
                 } else {
-                    Route::view($data['uri'], $name)->name($name);
+                    $route = Route::view($data['uri'], $name)->name($name);
+                }
+                if(isset($data['middlewares'])) {
+                    $route->middleware($data['middlewares']);
                 }
 
                 foreach($data['methods']??[] as $method => $schema) {
