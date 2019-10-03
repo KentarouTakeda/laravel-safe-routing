@@ -42,4 +42,22 @@ class MiddlewareTest extends TestCase
 
         $this->assertEquals(['safe.routing', 'some-middleware'], $middlewares);
     }
+
+    /** @test */
+    public function testGlobalMiddleware() {
+        resolve(SafeRouting::class)->makeRoute([
+            'middlewares' => ['global-middleware'],
+            'routes' => [
+                'foo' => [
+                    'controller' => 'SomeController@method',
+                    'middlewares' => ['some-middleware']
+                ]
+            ]
+        ]);
+        $this->route = Route::getRoutes()->get()[0];
+
+        $middlewares = $this->route->middleware();
+
+        $this->assertEquals(['safe.routing', 'global-middleware', 'some-middleware'], $middlewares);
+    }
 }
