@@ -29,14 +29,17 @@ class SafeRouting
                 $this->applyDefaultData($name, $data);
                 if(isset($data['controller'])) {
                     $route = Route::name($name);
+                    if(isset($data['middlewares'])) {
+                        $route->middleware($data['middlewares']);
+                    }
                     $methods = array_keys($data['methods']??[]) ?: ['GET'];
                     $methods = array_diff($methods, ['RET']);
                     $route->match($methods, $data['uri'], $data['controller']);
                 } else {
                     $route = Route::view($data['uri'], $name)->name($name);
-                }
-                if(isset($data['middlewares'])) {
-                    $route->middleware($data['middlewares']);
+                    if(isset($data['middlewares'])) {
+                        $route->middleware($data['middlewares']);
+                    }
                 }
 
                 foreach($data['methods']??[] as $method => $schema) {
