@@ -18,7 +18,7 @@ use Closure;
 class Validation
 {
     private const OPT_REQUEST = C::CHECK_MODE_TYPE_CAST | C::CHECK_MODE_EXCEPTIONS | C::CHECK_MODE_COERCE_TYPES | C::CHECK_MODE_APPLY_DEFAULTS;
-    private const OPT_RESPONSE = C::CHECK_MODE_TYPE_CAST | C::CHECK_MODE_EXCEPTIONS;
+    private const OPT_RESPONSE = C::CHECK_MODE_TYPE_CAST | C::CHECK_MODE_EXCEPTIONS | C::CHECK_MODE_APPLY_DEFAULTS;
 
     const METHOD_OTHER = [
         Request::METHOD_POST,
@@ -84,7 +84,7 @@ class Validation
             return $response;
         }
 
-        $content = $response->getOriginalContent();
+        $content = $response->getOriginalContent() ?? [];
         if(is_a($content, 'Illuminate\View\View')) {
             return $response;
         }
@@ -92,10 +92,11 @@ class Validation
         $schema = $this->getSchema($routename, 'RET');
         if(isset($schema)) {
             try {
-                $this->validate($content, $schema, self::OPT_RESPONSE);
+                $ret = $this->validate($content, $schema, self::OPT_RESPONSE);
             } catch(ValidationException $e) {
                 abort(500, $e->getMessage());
             }
+            $response->original = $ret;
         }
 
         return $response;
