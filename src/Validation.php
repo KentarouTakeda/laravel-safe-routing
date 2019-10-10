@@ -61,17 +61,19 @@ class Validation
             $request->query->replace($query);
         }
 
-        foreach(self::METHOD_OTHER as $method) {
-            $schema = $this->getSchema($routename, $method);
-            if(is_null($schema)) {
-                continue;
+        if(in_array($request->method(), self::METHOD_OTHER)) {
+            foreach(self::METHOD_OTHER as $method) {
+                $schema = $this->getSchema($routename, $method);
+                if(is_null($schema)) {
+                    continue;
+                }
+                try {
+                    $post = $this->validate($request->post(), $schema, self::OPT_REQUEST);
+                } catch(ValidationException $e) {
+                    abort(400, $e->getMessage());
+                }
+                $request->request->replace($post);
             }
-            try {
-                $post = $this->validate($request->post(), $schema, self::OPT_REQUEST);
-            } catch(ValidationException $e) {
-                abort(400, $e->getMessage());
-            }
-            $request->request->replace($post);
         }
 
         $response = $next($request);
