@@ -4,6 +4,7 @@ declare(strict_types=1);
 namespace KentarouTakeda\SafeRouting;
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\View;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 
@@ -24,6 +25,9 @@ class ApplyView
 
         $routename = Route::currentRouteName();
         if(is_null($routename)) {
+            return $response;
+        }
+        if(true !== View::exists($routename)) {
             return $response;
         }
         if(isset($response->exception)) {
