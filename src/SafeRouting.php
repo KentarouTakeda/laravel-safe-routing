@@ -22,10 +22,11 @@ class SafeRouting
         if(true !== isset($array['routes'])) {
             return;
         }
+        $prefix = $array['prefix'] ?? '/';
         $namespace = $array['namespace'] ?? '\App\Http\Controllers';
         $middlewares = array_merge(['safe.routing'], $array['middlewares']??[]);
 
-        Route::namespace($namespace)->middleware($middlewares)->group(function() use($array, $mtime) {
+        Route::prefix($prefix)->namespace($namespace)->middleware($middlewares)->group(function() use($array, $mtime) {
             foreach($array['routes'] as $name => $data) {
                 $this->applyDefaultData($name, $data);
                 if(isset($data['controller'])) {
