@@ -35,6 +35,9 @@
         "orchestra/testbench": "^4.0",
         "spatie/phpunit-watcher": "^1.12"
     },
+    "config": {
+        "process-timeout": 0
+    },
     "scripts": {
         "test": "phpunit",
         "watch": "phpunit-watcher watch"
