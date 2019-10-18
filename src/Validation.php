@@ -13,6 +13,10 @@ use JsonSchema\Validator;
 use JsonSchema\Constraints\Constraint as C;
 use JsonSchema\Exception\ValidationException;
 
+use KentarouTakeda\SafeRouting\Exception\GetValidationException;
+use KentarouTakeda\SafeRouting\Exception\PostValidationException;
+use KentarouTakeda\SafeRouting\Exception\ResponseValidationException;
+
 use Closure;
 
 class Validation
@@ -56,7 +60,7 @@ class Validation
             try {
                 $query = $this->validate($request->query(), $schema, self::OPT_REQUEST);
             } catch(ValidationException $e) {
-                abort(400, $e->getMessage());
+                throw new GetValidationException($e->getMessage(), $e->getCode(), $e);
             }
             $request->query->replace($query);
         }
@@ -70,7 +74,7 @@ class Validation
                 try {
                     $post = $this->validate($request->post(), $schema, self::OPT_REQUEST);
                 } catch(ValidationException $e) {
-                    abort(400, $e->getMessage());
+                    throw new PostValidationException($e->getMessage(), $e->getCode(), $e);
                 }
                 $request->request->replace($post);
             }
@@ -96,7 +100,7 @@ class Validation
             try {
                 $ret = $this->validate($content, $schema, self::OPT_RESPONSE);
             } catch(ValidationException $e) {
-                abort(500, $e->getMessage());
+                throw new ResponseValidationException($e->getMessage(), $e->getCode(), $e);
             }
             $response->original = $ret;
         }

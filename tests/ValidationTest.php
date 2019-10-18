@@ -24,7 +24,7 @@ class ValidationTest extends TestCase
         ]);
 
         $response = $this->get('/viewname?i=a');
-        $response->assertStatus(400);
+        $this->assertInstanceOf(\KentarouTakeda\SafeRouting\Exception\GetValidationException::class, $response->exception);
     }
 
     /** @test */
@@ -71,7 +71,7 @@ class ValidationTest extends TestCase
         ]);
 
         $response = $this->post('/viewname', ['i'=>'x']);
-        $response->assertStatus(400);
+        $this->assertInstanceOf(\KentarouTakeda\SafeRouting\Exception\PostValidationException::class, $response->exception);
     }
 
     /** @test */
@@ -113,7 +113,7 @@ class ValidationTest extends TestCase
         ]);
 
         $response = $this->get('/viewname');
-        $response->assertStatus(500);
+        $this->assertInstanceOf(\KentarouTakeda\SafeRouting\Exception\ResponseValidationException::class, $response->exception);
     }
 
     /** @test */
