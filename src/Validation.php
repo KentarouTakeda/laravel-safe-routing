@@ -99,7 +99,7 @@ class Validation
         $schema = $this->getSchema($routename, 'RET');
         if(isset($schema)) {
             if(is_a($response, JsonResponse::class)) {
-                $content = $response->getData();
+                $content = $response->getData(true) ?? [];
                 try {
                     $ret = $this->validate($content, $schema, self::OPT_RESPONSE);
                 } catch(ValidationException $e) {
