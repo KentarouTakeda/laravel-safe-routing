@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\File;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\JsonResponse;
 
 use JsonSchema\Validator;
 use JsonSchema\Constraints\Constraint as C;
@@ -97,12 +98,22 @@ class Validation
 
         $schema = $this->getSchema($routename, 'RET');
         if(isset($schema)) {
-            try {
-                $ret = $this->validate($content, $schema, self::OPT_RESPONSE);
-            } catch(ValidationException $e) {
-                throw new ResponseValidationException($e->getMessage(), $e->getCode(), $e);
+            if(is_a($response, JsonResponse::class)) {
+                $content = $response->getData();
+                try {
+                    $ret = $this->validate($content, $schema, self::OPT_RESPONSE);
+                } catch(ValidationException $e) {
+                    throw new ResponseValidationException($e->getMessage(), $e->getCode(), $e);
+                }
+                $response->setData($ret);
+            } else {
+                try {
+                    $ret = $this->validate($content, $schema, self::OPT_RESPONSE);
+                } catch(ValidationException $e) {
+                    throw new ResponseValidationException($e->getMessage(), $e->getCode(), $e);
+                }
+                $response->original = $ret;
             }
-            $response->original = $ret;
         }
 
         return $response;
