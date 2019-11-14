@@ -105,14 +105,18 @@ class Validation
                 } catch(ValidationException $e) {
                     throw new ResponseValidationException($e->getMessage(), $e->getCode(), $e);
                 }
-                $response->setData($ret);
+                if($schema['default']??true) {
+                    $response->setData($ret);
+                }
             } else {
                 try {
                     $ret = $this->validate($content, $schema, self::OPT_RESPONSE);
                 } catch(ValidationException $e) {
                     throw new ResponseValidationException($e->getMessage(), $e->getCode(), $e);
                 }
-                $response->original = $ret;
+                if($schema['default']??true) {
+                    $response->original = $ret;
+                }
             }
         }
 
