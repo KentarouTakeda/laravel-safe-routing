@@ -17,4 +17,19 @@ class SomeController {
     public function post(Request $request) {
         return $request->post();
     }
+    public function returnA() {
+        return [
+            'data' => 'A',
+        ];
+    }
+    public function returnB() {
+        return [
+            'data' => 'B',
+        ];
+    }
+    public function returnC() {
+        return [
+            'data' => 'C',
+        ];
+    }
 }
