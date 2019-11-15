@@ -29,18 +29,23 @@ class SafeRouting
         Route::prefix($prefix)->namespace($namespace)->middleware($middlewares)->group(function() use($array, $mtime) {
             foreach($array['routes'] as $name => $data) {
                 $this->applyDefaultData($name, $data);
-                if(isset($data['controller'])) {
-                    $route = Route::name($name);
-                    if(isset($data['middlewares'])) {
-                        $route->middleware($data['middlewares']);
-                    }
-                    $methods = array_keys($data['methods']??[]) ?: ['GET'];
-                    $methods = array_diff($methods, ['RET']);
-                    $route->match($methods, $data['uri'], $data['controller']);
-                } else {
-                    $route = Route::view($data['uri'], $name)->name($name);
-                    if(isset($data['middlewares'])) {
-                        $route->middleware($data['middlewares']);
+
+                $methods = array_keys($data['methods']??[]) ?: ['GET'];
+                $methods = array_diff($methods, ['RET']);
+
+                foreach($methods as $method) {
+                    $controller = $data['methods'][$method]['controller'] ?? $data['controller'] ?? null;
+                    if(isset($controller)) {
+                        $route = Route::name($name);
+                        if(isset($data['middlewares'])) {
+                            $route->middleware($data['middlewares']);
+                        }
+                        $route->match($method, $data['uri'], $controller);
+                    } else {
+                        $route = Route::view($data['uri'], $name)->name($name);
+                        if(isset($data['middlewares'])) {
+                            $route->middleware($data['middlewares']);
+                        }
                     }
                 }
 
