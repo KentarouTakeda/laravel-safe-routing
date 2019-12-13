@@ -1,5 +1,6 @@
 {
     "name": "kentaroutakeda/laravel-safe-routing",
+    "description": "Yaml based type safe routing for laravel",
     "license": "MIT",
     "authors": [
         {
