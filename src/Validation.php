@@ -49,6 +49,11 @@ class Validation
         $this->validator = $validator;
         $this->cachePath = storage_path('framework/saferouting/');
         File::makeDirectory($this->cachePath, 0775, true, true);
+
+        $gitignore = storage_path('framework/saferouting/.gitignore');
+        if(true !== File::exists($gitignore)) {
+            File::put($gitignore, "*\n");
+        }
     }
 
     public function handle(Request $request, Closure $next)
