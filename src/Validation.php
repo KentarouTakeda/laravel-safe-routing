@@ -29,7 +29,6 @@ class Validation
         Request::METHOD_POST,
         Request::METHOD_PUT,
         Request::METHOD_PATCH,
-        Request::METHOD_DELETE,
         Request::METHOD_PURGE,
         Request::METHOD_OPTIONS,
         Request::METHOD_TRACE,
