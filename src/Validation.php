@@ -144,6 +144,7 @@ class Validation
         } catch(\Exception $e) {}
     }
     public function getSchema(string $name, string $method):? array {
+        $name = SafeRouting::NameWithoutMethod($name);
         $schema = $this->schemas[$name][$method] ?? null;
         if(isset($schema)) {
             return $schema;

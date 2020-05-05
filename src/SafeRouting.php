@@ -14,6 +14,9 @@ class SafeRouting
     /** @var array */
     protected $descriptions = [];
 
+    /** @var string[] */
+    const METHODS = ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'];
+
     public function __construct(Validation $validation) {
         $this->validation = $validation;
     }
@@ -30,13 +33,19 @@ class SafeRouting
             foreach($array['routes'] as $name => $data) {
                 $this->applyDefaultData($name, $data);
 
-                $methods = array_keys($data['methods']??[]) ?: ['GET'];
-                $methods = array_diff($methods, ['RET']);
+                $methods = array_intersect(self::METHODS, array_keys($data['methods']??[]) ?: ['GET']);
+                $defaultMethod = null;
 
                 foreach($methods as $method) {
                     $controller = $data['methods'][$method]['controller'] ?? $data['controller'] ?? null;
+                    $routeName = $name;
                     if(isset($controller)) {
-                        $route = Route::name($name);
+                        if(isset($defaultMethod)) {
+                            $routeName .= ".__{$method}__";
+                        } else {
+                            $defaultMethod = $method;
+                        }
+                        $route = Route::name($routeName);
                         if(isset($data['middlewares'])) {
                             $route->middleware($data['middlewares']);
                         }
@@ -46,6 +55,7 @@ class SafeRouting
                         if(isset($data['middlewares'])) {
                             $route->middleware($data['middlewares']);
                         }
+                        break;
                     }
                 }
 
@@ -76,5 +86,15 @@ class SafeRouting
     }
     public function getDescription(string $name):? string {
         return $this->descriptions[$name] ?? null;
+    }
+
+    static function NameWithoutMethod(string $name): string {
+        foreach(self::METHODS as $m) {
+            $name = preg_replace("/\.__{$m}__$/", '', $name, 1, $count);
+            if($count>0) {
+                break;
+            }
+        }
+        return $name;
     }
 }

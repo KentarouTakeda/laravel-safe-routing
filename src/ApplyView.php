@@ -27,6 +27,7 @@ class ApplyView
         if(is_null($routename)) {
             return $response;
         }
+        $routename = SafeRouting::NameWithoutMethod($routename);
         if(true !== View::exists($routename)) {
             return $response;
         }
