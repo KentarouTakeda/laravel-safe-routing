@@ -127,6 +127,11 @@ class Validation
         return $response;
     }
 
+    public function removeSchema(string $name, string $method): void {
+        $file = $this->getSchemaCacheName($name, $method);
+        File::delete($file);
+    }
+
     public function setSchema(string $name, string $method, array $schema, ?int $mtime): void {
         $this->schemas[$name][$method] = $schema;
         if(is_null($mtime)) {

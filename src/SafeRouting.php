@@ -68,6 +68,13 @@ class SafeRouting
                 if(isset($data['RET'])) {
                     $this->validation->setSchema($name, 'RET', $data['RET'], $mtime);
                 }
+
+                $keys = self::METHODS;
+                $keys[] = 'RET';
+                $removes = array_diff($keys, $methods);
+                foreach($removes as $method) {
+                    $this->validation->removeSchema($name, $method);
+                }
             }
         });
     }
